@@ -94,22 +94,23 @@ tpButton.MouseButton1Click:Connect(function()
     local selectedModel = toolsFolder:FindFirstChild(selectedModelName)
 
     if selectedModel then
+        local originalPosition = player.Character.HumanoidRootPart.CFrame -- Store original position
         local args = {
             [1] = "#" .. selectedModel.Name, -- Assuming the remote needs the formatted name
             [2] = selectedModel.Name -- The full model name
         }
-        remote:InvokeServer(unpack(args))
 
-        -- Teleport to the model's position (use model's position directly)
-        player.Character.HumanoidRootPart.CFrame = selectedModel:GetModelCFrame() -- Teleport to the model's CFrame
+        -- Fire the remote multiple times
+        for i = 1, 5 do
+            remote:InvokeServer(unpack(args))
+            wait(0.18) -- Wait for 0.18 seconds between calls
+        end
+
+        -- Teleport back to the original position
+        player.Character.HumanoidRootPart.CFrame = originalPosition
     else
         warn("No model selected or model not found.")
     end
 end)
-
--- Helper function to get the model's CFrame
-function Model:GetModelCFrame()
-    return self:GetPrimaryPartCFrame() or CFrame.new(self:GetModelCFrame().Position)
-end
 
 print("Model Picker GUI created successfully!")
