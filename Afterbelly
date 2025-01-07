@@ -25,6 +25,7 @@ scrollingFrame.Visible = false
 scrollingFrame.ScrollBarThickness = 10
 scrollingFrame.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Right
 scrollingFrame.ScrollBarImageTransparency = 0.5
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Initialize with zero size
 
 -- Create UI List Layout for Scrolling Frame
 local uiListLayout = Instance.new("UIListLayout", scrollingFrame)
@@ -63,6 +64,11 @@ for _, model in ipairs(toolsFolder:GetChildren()) do
         createModelButton(model)
     end
 end
+
+-- Update CanvasSize based on the number of buttons
+uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, uiListLayout.AbsoluteContentSize.Y) -- Adjust canvas size to fit content
+end)
 
 -- Button to open the scrolling frame
 openButton.MouseButton1Click:Connect(function()
