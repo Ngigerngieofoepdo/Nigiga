@@ -16,14 +16,15 @@ openButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
 openButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 openButton.Text = "Show Models"
 
--- Create Scroll Frame
-local scrollingFrame = Instance.new("Frame", screenGui)
+-- Create Scrolling Frame
+local scrollingFrame = Instance.new("ScrollingFrame", screenGui)
 scrollingFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
 scrollingFrame.Position = UDim2.new(0.25, 0, 0.25, 0)
 scrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
 scrollingFrame.Visible = false
+scrollingFrame.ScrollBarThickness = 10
 
--- Create UI List Layout for Scroll Frame
+-- Create UI List Layout for Scrolling Frame
 local uiListLayout = Instance.new("UIListLayout", scrollingFrame)
 uiListLayout.FillDirection = Enum.FillDirection.Vertical
 uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -41,7 +42,7 @@ closeButton.Text = "Close"
 local function createModelButton(model)
     if string.find(model.Name, "#") then -- Check if the model name contains a #
         local button = Instance.new("TextButton")
-        button.Size = UDim2.new(1, 0, 0, 50)
+        button.Size = UDim2.new(1, 0, 0, 50) -- Full width, fixed height
         button.Text = model.Name
         button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey
         button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
@@ -61,7 +62,7 @@ for _, model in ipairs(toolsFolder:GetChildren()) do
     end
 end
 
--- Button to open the scroll frame
+-- Button to open the scrolling frame
 openButton.MouseButton1Click:Connect(function()
     scrollingFrame.Visible = true
 end)
@@ -90,7 +91,13 @@ tpButton.MouseButton1Click:Connect(function()
             [2] = selectedModel.Name -- The full model name
         }
         remote:InvokeServer(unpack(args))
-        player.Character.HumanoidRootPart.CFrame = selectedModel.PrimaryPart.CFrame -- Teleport to the model's primary part
+
+        -- Check if the model has a PrimaryPart set
+        if selectedModel.PrimaryPart then
+            player.Character.HumanoidRootPart.CFrame = selectedModel.PrimaryPart.CFrame -- Teleport to the model's primary part
+        else
+            warn("The selected model does not have a PrimaryPart set.")
+        end
     else
         warn("No model selected or model not found.")
     end
