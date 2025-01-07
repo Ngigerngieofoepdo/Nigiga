@@ -95,19 +95,29 @@ tpButton.MouseButton1Click:Connect(function()
 
     if selectedModel then
         local originalPosition = player.Character.HumanoidRootPart.CFrame -- Store original position
-        local args = {
-            [1] = "#" .. selectedModel.Name, -- Assuming the remote needs the formatted name
-            [2] = selectedModel.Name -- The full model name
-        }
+        local successCount = 0
 
         -- Fire the remote multiple times
         for i = 1, 5 do
-            remote:InvokeServer(unpack(args))
+            local success, err = pcall(function()
+                remote:InvokeServer("#" .. selectedModel.Name, selectedModel.Name)
+            end)
+
+            if success then
+                successCount = successCount + 1
+            else
+                warn("Error firing remote: " .. err)
+            end
+            
             wait(0.18) -- Wait for 0.18 seconds between calls
         end
 
-        -- Teleport back to the original position
-        player.Character.HumanoidRootPart.CFrame = originalPosition
+        -- Wait until all calls are made before teleporting back
+        if successCount == 5 then
+            player.Character.HumanoidRootPart.CFrame = originalPosition
+        else
+            warn("Not all remote calls were successful.")
+        end
     else
         warn("No model selected or model not found.")
     end
