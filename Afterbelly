@@ -95,6 +95,10 @@ tpButton.MouseButton1Click:Connect(function()
 
     if selectedModel then
         local originalPosition = player.Character.HumanoidRootPart.CFrame -- Store original position
+
+        -- Teleport to the model's position
+        player.Character.HumanoidRootPart.CFrame = selectedModel:GetModelCFrame() -- Teleport to the model's CFrame
+
         local successCount = 0
 
         -- Fire the remote multiple times
@@ -112,15 +116,17 @@ tpButton.MouseButton1Click:Connect(function()
             wait(0.18) -- Wait for 0.18 seconds between calls
         end
 
-        -- Wait until all calls are made before teleporting back
-        if successCount == 5 then
-            player.Character.HumanoidRootPart.CFrame = originalPosition
-        else
-            warn("Not all remote calls were successful.")
-        end
+        -- Teleport back to the original position after firing the remote
+        wait(0.9) -- Optional wait to ensure the remote calls have time to process
+        player.Character.HumanoidRootPart.CFrame = originalPosition
     else
         warn("No model selected or model not found.")
     end
 end)
+
+-- Helper function to get the model's CFrame
+function Model:GetModelCFrame()
+    return self:GetPrimaryPartCFrame() or CFrame.new(self:GetModelCFrame().Position)
+end
 
 print("Model Picker GUI created successfully!")
