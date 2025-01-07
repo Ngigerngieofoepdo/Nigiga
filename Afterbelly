@@ -84,8 +84,8 @@ tpButton.MouseButton1Click:Connect(function()
     
     if selectedPart then
         local args = {
-            [1] = "#" .. selectedPart.Name,
-            [2] = selectedPart.Name -- Assuming the part name is enough for the remote
+            [1] = "#" .. selectedPart.Name, -- Assuming the remote needs the formatted name
+            [2] = selectedPart.Name -- The full part name
         }
         remote:InvokeServer(unpack(args))
         player.Character.HumanoidRootPart.CFrame = selectedPart.CFrame -- Teleport to the part
