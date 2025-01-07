@@ -92,7 +92,7 @@ tpButton.MouseButton1Click:Connect(function()
         }
         remote:InvokeServer(unpack(args))
 
-        -- Check if the model has a PrimaryPart set
+        -- Teleport to the model position
         if selectedModel.PrimaryPart then
             player.Character.HumanoidRootPart.CFrame = selectedModel.PrimaryPart.CFrame -- Teleport to the model's primary part
         else
