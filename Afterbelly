@@ -92,7 +92,7 @@ tpButton.Text = "TP and Get"
 tpButton.MouseButton1Click:Connect(function()
     local selectedModelName = screenGui:GetAttribute("SelectedModel")
     local selectedModel = toolsFolder:FindFirstChild(selectedModelName)
-    
+
     if selectedModel then
         local args = {
             [1] = "#" .. selectedModel.Name, -- Assuming the remote needs the formatted name
@@ -100,15 +100,16 @@ tpButton.MouseButton1Click:Connect(function()
         }
         remote:InvokeServer(unpack(args))
 
-        -- Teleport to the model position
-        if selectedModel.PrimaryPart then
-            player.Character.HumanoidRootPart.CFrame = selectedModel.PrimaryPart.CFrame -- Teleport to the model's primary part
-        else
-            warn("The selected model does not have a PrimaryPart set.")
-        end
+        -- Teleport to the model's position (use model's position directly)
+        player.Character.HumanoidRootPart.CFrame = selectedModel:GetModelCFrame() -- Teleport to the model's CFrame
     else
         warn("No model selected or model not found.")
     end
 end)
+
+-- Helper function to get the model's CFrame
+function Model:GetModelCFrame()
+    return self:GetPrimaryPartCFrame() or CFrame.new(self:GetModelCFrame().Position)
+end
 
 print("Model Picker GUI created successfully!")
