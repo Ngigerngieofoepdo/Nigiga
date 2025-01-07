@@ -1,12 +1,12 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local itemsFolder = workspace:WaitForChild("Map"):WaitForChild("Ignore"):WaitForChild("Tools") -- Adjusted for all items
+local toolsFolder = workspace:WaitForChild("Map"):WaitForChild("Ignore"):WaitForChild("Tools") -- Folder containing models
 local remote = workspace.Services:WaitForChild("PickupTool")
 
 -- Create Screen GUI
 local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "ItemPickerGui"
+screenGui.Name = "ModelPickerGui"
 
 -- Create Main Button to Open Scroll Frame
 local openButton = Instance.new("TextButton", screenGui)
@@ -14,7 +14,7 @@ openButton.Size = UDim2.new(0.2, 0, 0.1, 0)
 openButton.Position = UDim2.new(0.4, 0, 0.1, 0)
 openButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
 openButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-openButton.Text = "Show Items"
+openButton.Text = "Show Models"
 
 -- Create Scroll Frame
 local scrollingFrame = Instance.new("Frame", screenGui)
@@ -37,24 +37,28 @@ closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 closeButton.Text = "Close"
 
--- Function to create buttons for each item
-local function createItemButton(item)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, 50)
-    button.Text = item.Name
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey
-    button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-    button.Parent = scrollingFrame
+-- Function to create buttons for each model with a #
+local function createModelButton(model)
+    if string.find(model.Name, "#") then -- Check if the model name contains a #
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, 0, 0, 50)
+        button.Text = model.Name
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey
+        button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+        button.Parent = scrollingFrame
 
-    button.MouseButton1Click:Connect(function()
-        -- Store the selected item name for activation
-        screenGui:SetAttribute("SelectedItem", item.Name)
-    end)
+        button.MouseButton1Click:Connect(function()
+            -- Store the selected model name for activation
+            screenGui:SetAttribute("SelectedModel", model.Name)
+        end)
+    end
 end
 
--- Populate the scrolling frame with all items
-for _, item in ipairs(itemsFolder:GetChildren()) do
-    createItemButton(item)
+-- Populate the scrolling frame with all models containing a #
+for _, model in ipairs(toolsFolder:GetChildren()) do
+    if model:IsA("Model") then
+        createModelButton(model)
+    end
 end
 
 -- Button to open the scroll frame
@@ -77,19 +81,19 @@ tpButton.Text = "TP and Get"
 
 -- TP and Get functionality
 tpButton.MouseButton1Click:Connect(function()
-    local selectedItemName = screenGui:GetAttribute("SelectedItem")
-    local selectedItem = itemsFolder:FindFirstChild(selectedItemName)
+    local selectedModelName = screenGui:GetAttribute("SelectedModel")
+    local selectedModel = toolsFolder:FindFirstChild(selectedModelName)
     
-    if selectedItem then
+    if selectedModel then
         local args = {
-            [1] = "#" .. selectedItem.Name, -- Assuming the remote needs the formatted name
-            [2] = selectedItem.Name -- The full item name
+            [1] = "#" .. selectedModel.Name, -- Assuming the remote needs the formatted name
+            [2] = selectedModel.Name -- The full model name
         }
         remote:InvokeServer(unpack(args))
-        player.Character.HumanoidRootPart.CFrame = selectedItem.CFrame -- Teleport to the item
+        player.Character.HumanoidRootPart.CFrame = selectedModel.PrimaryPart.CFrame -- Teleport to the model's primary part
     else
-        warn("No item selected or item not found.")
+        warn("No model selected or model not found.")
     end
 end)
 
-print("Item Picker GUI created successfully!")
+print("Model Picker GUI created successfully!")
