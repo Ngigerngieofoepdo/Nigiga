@@ -1,12 +1,12 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local toolsFolder = workspace:WaitForChild("Map"):WaitForChild("Ignore"):WaitForChild("Tools")
+local partsFolder = workspace:WaitForChild("Map"):WaitForChild("Ignore"):WaitForChild("Tools") -- Adjusted for parts
 local remote = workspace.Services:WaitForChild("PickupTool")
 
 -- Create Screen GUI
 local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "ToolPickerGui"
+screenGui.Name = "PartPickerGui"
 
 -- Create Main Button to Open Scroll Frame
 local openButton = Instance.new("TextButton", screenGui)
@@ -14,7 +14,7 @@ openButton.Size = UDim2.new(0.2, 0, 0.1, 0)
 openButton.Position = UDim2.new(0.4, 0, 0.1, 0)
 openButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
 openButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-openButton.Text = "Show Tools"
+openButton.Text = "Show Parts"
 
 -- Create Scroll Frame
 local scrollingFrame = Instance.new("Frame", screenGui)
@@ -37,25 +37,25 @@ closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 closeButton.Text = "Close"
 
--- Function to create buttons for each tool
-local function createToolButton(tool)
+-- Function to create buttons for each part
+local function createPartButton(part)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(1, 0, 0, 50)
-    button.Text = tool.Name
+    button.Text = part.Name
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey
     button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
     button.Parent = scrollingFrame
 
     button.MouseButton1Click:Connect(function()
-        -- Store the selected tool name for teleportation
-        screenGui:SetAttribute("SelectedTool", tool.Name)
+        -- Store the selected part name for activation
+        screenGui:SetAttribute("SelectedPart", part.Name)
     end)
 end
 
--- Populate the scrolling frame with tools
-for _, tool in ipairs(toolsFolder:GetChildren()) do
-    if tool:IsA("Tool") then
-        createToolButton(tool)
+-- Populate the scrolling frame with parts
+for _, part in ipairs(partsFolder:GetChildren()) do
+    if part:IsA("Part") then
+        createPartButton(part)
     end
 end
 
@@ -79,19 +79,19 @@ tpButton.Text = "TP and Get"
 
 -- TP and Get functionality
 tpButton.MouseButton1Click:Connect(function()
-    local selectedToolName = screenGui:GetAttribute("SelectedTool")
-    local selectedTool = toolsFolder:FindFirstChild(selectedToolName)
+    local selectedPartName = screenGui:GetAttribute("SelectedPart")
+    local selectedPart = partsFolder:FindFirstChild(selectedPartName)
     
-    if selectedTool then
+    if selectedPart then
         local args = {
-            [1] = "#" .. selectedTool.Name,
-            [2] = selectedTool.Name .. "#" .. selectedTool:GetAttribute("ID") -- Assuming there's an ID attribute or similar
+            [1] = "#" .. selectedPart.Name,
+            [2] = selectedPart.Name -- Assuming the part name is enough for the remote
         }
         remote:InvokeServer(unpack(args))
-        player.Character.HumanoidRootPart.CFrame = selectedTool.CFrame -- Teleport to the tool
+        player.Character.HumanoidRootPart.CFrame = selectedPart.CFrame -- Teleport to the part
     else
-        warn("No tool selected or tool not found.")
+        warn("No part selected or part not found.")
     end
 end)
 
-print("Tool Picker GUI created successfully!")
+print("Part Picker GUI created successfully!")
