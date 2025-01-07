@@ -23,6 +23,8 @@ scrollingFrame.Position = UDim2.new(0.25, 0, 0.25, 0)
 scrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
 scrollingFrame.Visible = false
 scrollingFrame.ScrollBarThickness = 10
+scrollingFrame.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Right
+scrollingFrame.ScrollBarImageTransparency = 0.5
 
 -- Create UI List Layout for Scrolling Frame
 local uiListLayout = Instance.new("UIListLayout", scrollingFrame)
